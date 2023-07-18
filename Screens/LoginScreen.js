@@ -13,7 +13,6 @@ import {
 } from "react-native";
 import backgroundImg from "..//images/bg-pic.jpg";
 import { useState } from "react";
-// import Icon from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 
 export const LoginScreen = () => {
@@ -23,8 +22,7 @@ export const LoginScreen = () => {
   const navigation = useNavigation();
 
   const onLogIn = () => {
-    navigation.navigate("Posts");
-    // navigation.navigate("PostsTabs");
+    navigation.navigate("PostsTabs");
     // Alert.alert(`Credentials: ${email} ${password}`);
   };
 
@@ -49,7 +47,6 @@ export const LoginScreen = () => {
                   onChangeText={onChangeEmail}
                   value={email}
                   placeholder="Адреса електронної пошти"
-                  // keyboardType="numeric"
                 />
 
                 <View style={styles.passwordField}>
@@ -59,7 +56,6 @@ export const LoginScreen = () => {
                     value={password}
                     secureTextEntry
                     placeholder="Пароль"
-                    // keyboardType="numeric"
                   />
                   <Pressable
                     // onPress={onPressShowPassword}

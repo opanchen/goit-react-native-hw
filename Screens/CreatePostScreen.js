@@ -1,4 +1,3 @@
-import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -6,16 +5,6 @@ import Icon from "react-native-vector-icons/Ionicons";
 export const CreatePostScreen = () => {
   const [title, setTitle] = useState("");
   const [location, setLocation] = useState("");
-  const navigation = useNavigation();
-
-  const backIcon = (
-    <Icon
-      name="arrow-back-outline"
-      size={25}
-      color={"#212121"}
-      style={styles.logoutIcon}
-    />
-  );
 
   const removeIcon = (
     <Icon
@@ -46,16 +35,6 @@ export const CreatePostScreen = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Pressable
-          style={styles.backBtn}
-          onPress={() => navigation.navigate("Profile")}
-        >
-          {backIcon}
-        </Pressable>
-        <Text style={styles.heading}>Створити публікацію</Text>
-      </View>
-
       <View style={styles.postForm}>
         <View style={styles.uploadArea}>
           {picturePlaceholder}
@@ -91,14 +70,6 @@ export const CreatePostScreen = () => {
         </Pressable>
       </View>
 
-      {/* <View style={styles.userBox}>
-        <Image style={styles.userImg} source={UserDefaultAvatar} />
-        <View style={styles.userInfo}>
-          <Text style={styles.userName}>Natali Romanova</Text>
-          <Text style={styles.userEmail}>email@example.com</Text>
-        </View>
-      </View> */}
-
       <View style={styles.tabBar}>
         <Pressable style={styles.removeBtn}>{removeIcon}</Pressable>
       </View>
@@ -112,36 +83,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingLeft: 16,
     paddingRight: 16,
-  },
-
-  // Header Styles:
-  header: {
-    position: "absolute",
-    top: 48,
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-    height: 44,
-    borderBottomWidth: 1,
-    borderBottomColor: "#BDBDBD",
-  },
-  heading: {
-    textAlign: "center",
-    fontSize: 17,
-    fontStyle: "normal",
-    fontWeight: 500,
-    lineHeight: 22,
-    letterSpacing: -0.408,
-  },
-  backBtn: {
-    position: "absolute",
-    left: 16,
-  },
-  backIcon: {
-    width: 24,
-    height: 24,
+    backgroundColor: "#FFF",
   },
 
   //  Tab Bar styles:
@@ -173,11 +115,9 @@ const styles = StyleSheet.create({
 
   //   Post-form Styles:
   postForm: {
-    // borderWidth: 1,
     position: "relative",
     width: "100%",
     marginTop: 120,
-    // flex: 0,
   },
   picturePlaceholder: {
     width: "100%",

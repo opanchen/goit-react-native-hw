@@ -5,15 +5,9 @@ import "react-native-gesture-handler";
 
 import { RegistrationScreen } from "./Screens/RegistrationScreen";
 import { LoginScreen } from "./Screens/LoginScreen";
-import { PostsScreen } from "./Screens/PostsScreen";
-import { CreatePostScreen } from "./Screens/CreatePostScreen";
-import { ProfileScreen } from "./Screens/ProfileScreen";
 import { CommentsScreen } from "./Screens/CommentsScreen";
 
-// import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-// import Icon from "react-native-vector-icons/Ionicons";
-// import { PostsTabs } from "./tabs/PostTabs";
-// const Tab = createBottomTabNavigator();
+import { PostsTabs } from "./tabs/PostsTabs";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -45,24 +39,8 @@ export default function App() {
           />
 
           <MainStack.Screen
-            name="Posts"
-            component={PostsScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-
-          <MainStack.Screen
-            name="Create"
-            component={CreatePostScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-
-          <MainStack.Screen
-            name="Profile"
-            component={ProfileScreen}
+            name="PostsTabs"
+            component={PostsTabs}
             options={{
               headerShown: false,
             }}
@@ -72,17 +50,14 @@ export default function App() {
             name="Comments"
             component={CommentsScreen}
             options={{
-              headerShown: false,
+              title: "Коментарі",
+              headerTitleAlign: "center",
+              headerStyle: {
+                backgroundColor: "#FFF",
+                borderBottomWidth: 1,
+              },
             }}
           />
-
-          {/* <MainStack.Screen
-            name="PostsTabs"
-            component={PostsTabs}
-            options={{
-              headerShown: false,
-            }}
-          /> */}
         </MainStack.Navigator>
       </NavigationContainer>
     </>
