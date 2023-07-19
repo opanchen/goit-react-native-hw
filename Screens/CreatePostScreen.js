@@ -1,10 +1,63 @@
-import { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { useEffect, useState } from "react";
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
+import * as Location from "expo-location";
+import { useNavigation } from "@react-navigation/native";
+import { CameraView } from "../components/CameraView";
 
 export const CreatePostScreen = () => {
-  const [title, setTitle] = useState("");
-  const [location, setLocation] = useState("");
+  const [image, setImage] = useState(null);
+  const [title, onChangeTitle] = useState("");
+  const [location, onChangeLocation] = useState("");
+  const [coordinates, setCoordinates] = useState(null);
+
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission to access location was denied");
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      const coords = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      };
+      setCoordinates(coords);
+    })();
+  }, []);
+
+  const isSubmitBtnDisabled =
+    image && title.trim().length !== 0 && location.trim().length !== 0
+      ? false
+      : true;
+
+  const onFormSubmit = () => {
+    const data = {
+      image,
+      title,
+      location,
+      coordinates,
+    };
+    console.log("Form submit DATA: ", data);
+
+    navigation.navigate("Posts");
+  };
+
+  const onReset = () => {
+    setImage(null);
+    onChangeLocation("");
+    onChangeTitle("");
+  };
 
   const removeIcon = (
     <Icon
@@ -13,10 +66,6 @@ export const CreatePostScreen = () => {
       color={"#BDBDBD"}
       style={styles.removeIcon}
     />
-  );
-
-  const imageIcon = (
-    <Icon name="camera" size={25} color={"#BDBDBD"} style={styles.imageIcon} />
   );
 
   const locationIcon = (
@@ -28,50 +77,59 @@ export const CreatePostScreen = () => {
     />
   );
 
-  const picturePlaceholder = <View style={styles.picturePlaceholder}></View>;
-
-  const onChangeTitle = () => {};
-  const onChangeLocation = () => {};
-
   return (
     <View style={styles.container}>
       <View style={styles.postForm}>
-        <View style={styles.uploadArea}>
-          {picturePlaceholder}
-          <Pressable style={styles.uploadBtn}>{imageIcon}</Pressable>
-        </View>
-        <Pressable style={styles.uploadLabel}>
-          <Text style={styles.uploadLabelText}>Завантажте фото</Text>
-        </Pressable>
+        <CameraView uploadImage={setImage} />
 
-        <View style={styles.inputField}>
-          <TextInput
-            style={styles.formInput}
-            onChangeText={onChangeTitle}
-            value={title}
-            placeholder="Назва..."
-            placeholderTextColor={"#BDBDBD"}
-          />
-        </View>
+        <View style={{ marginTop: 32 }}>
+          <View style={styles.inputField}>
+            <TextInput
+              style={styles.formInput}
+              onChangeText={onChangeTitle}
+              value={title}
+              placeholder="Назва..."
+              placeholderTextColor={"#BDBDBD"}
+            />
+          </View>
 
-        <View style={styles.inputField}>
-          {locationIcon}
-          <TextInput
-            style={styles.formInput}
-            onChangeText={onChangeLocation}
-            value={location}
-            placeholder="Місцевість..."
-            placeholderTextColor={"#BDBDBD"}
-          />
+          <View style={styles.inputField}>
+            {locationIcon}
+            <TextInput
+              style={styles.formInput}
+              onChangeText={onChangeLocation}
+              value={location}
+              placeholder="Місцевість..."
+              placeholderTextColor={"#BDBDBD"}
+            />
+          </View>
         </View>
 
-        <Pressable style={styles.submitBtn}>
-          <Text style={styles.submitBtnText}>Опубліковати</Text>
+        <Pressable
+          disabled={isSubmitBtnDisabled}
+          style={
+            isSubmitBtnDisabled
+              ? styles.submitBtnDisabled
+              : styles.submitBtnActive
+          }
+          onPress={onFormSubmit}
+        >
+          <Text
+            style={
+              isSubmitBtnDisabled
+                ? styles.submitBtnTextDisable
+                : styles.submitBtnTextActive
+            }
+          >
+            Опубліковати
+          </Text>
         </Pressable>
       </View>
 
       <View style={styles.tabBar}>
-        <Pressable style={styles.removeBtn}>{removeIcon}</Pressable>
+        <Pressable style={styles.removeBtn} onPress={onReset}>
+          {removeIcon}
+        </Pressable>
       </View>
     </View>
   );
@@ -83,6 +141,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingLeft: 16,
     paddingRight: 16,
+    paddingTop: 32,
     backgroundColor: "#FFF",
   },
 
@@ -117,56 +176,13 @@ const styles = StyleSheet.create({
   postForm: {
     position: "relative",
     width: "100%",
-    marginTop: 120,
+
+    // marginTop: 120,
   },
   picturePlaceholder: {
     width: "100%",
     height: "100%",
     backgroundColor: "#F6F6F6",
-  },
-  uploadArea: {
-    position: "relative",
-
-    //for center position of uploadBtn:
-    alignItems: "center",
-    justifyContent: "center",
-
-    width: "100%",
-    flex: 0,
-    flexDirection: "row",
-    height: 240,
-    borderRadius: 8,
-    borderColor: "#E8E8E8",
-    borderWidth: 1,
-  },
-  uploadBtn: {
-    position: "absolute",
-    flex: 0,
-    alignItems: "center",
-    justifyContent: "center",
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    // borderWidth: 1,
-    backgroundColor: "#FFFFFF",
-  },
-  imageIcon: {
-    position: "absolute",
-    bottom: 19,
-    // borderWidth: 1,
-    width: 24,
-    height: 24,
-  },
-  uploadLabel: {
-    marginTop: 8,
-    marginBottom: 32,
-  },
-  uploadLabelText: {
-    color: "#BDBDBD",
-    fontSize: 16,
-    fontStyle: "normal",
-    fontWeight: 400,
-    // lineHeight: "normal",
   },
 
   inputField: {
@@ -191,7 +207,7 @@ const styles = StyleSheet.create({
     height: 24,
     marginRight: 4,
   },
-  submitBtn: {
+  submitBtnDisabled: {
     width: "100%",
     height: "auto",
     marginTop: 32,
@@ -201,14 +217,31 @@ const styles = StyleSheet.create({
     paddingLeft: 32,
     borderRadius: 100,
     backgroundColor: "#F6F6F6",
+    // color: "#BDBDBD",
   },
-  submitBtnText: {
+  submitBtnActive: {
+    width: "100%",
+    height: "auto",
+    marginTop: 32,
+    paddingTop: 16,
+    paddingRight: 32,
+    paddingBottom: 16,
+    paddingLeft: 32,
+    borderRadius: 100,
+    backgroundColor: "#FF6C00",
+  },
+  submitBtnTextDisable: {
     textAlign: "center",
     fontSize: 16,
     fontStyle: "normal",
     fontWeight: 400,
     color: "#BDBDBD",
-    // lineHeight: 22,
-    // letterSpacing: -0.408,
+  },
+  submitBtnTextActive: {
+    textAlign: "center",
+    fontSize: 16,
+    fontStyle: "normal",
+    fontWeight: 400,
+    color: "#FFF",
   },
 });
