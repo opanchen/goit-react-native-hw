@@ -6,8 +6,8 @@ import "react-native-gesture-handler";
 import { RegistrationScreen } from "./Screens/RegistrationScreen";
 import { LoginScreen } from "./Screens/LoginScreen";
 import { CommentsScreen } from "./Screens/CommentsScreen";
-
 import { PostsTabs } from "./tabs/PostsTabs";
+import { MapScreen } from "./Screens/MapScreen";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -51,6 +51,19 @@ export default function App() {
             component={CommentsScreen}
             options={{
               title: "Коментарі",
+              headerTitleAlign: "center",
+              headerStyle: {
+                backgroundColor: "#FFF",
+                borderBottomWidth: 1,
+              },
+            }}
+          />
+
+          <MainStack.Screen
+            name="Map"
+            component={MapScreen}
+            options={{
+              title: "Карта",
               headerTitleAlign: "center",
               headerStyle: {
                 backgroundColor: "#FFF",

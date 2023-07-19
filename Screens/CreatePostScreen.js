@@ -8,13 +8,56 @@ import {
   View,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
-
+import * as Location from "expo-location";
+import { useNavigation } from "@react-navigation/native";
 import { CameraView } from "../components/CameraView";
 
 export const CreatePostScreen = () => {
   const [image, setImage] = useState(null);
   const [title, onChangeTitle] = useState("");
   const [location, onChangeLocation] = useState("");
+  const [coordinates, setCoordinates] = useState(null);
+
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission to access location was denied");
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      const coords = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      };
+      setCoordinates(coords);
+    })();
+  }, []);
+
+  const isSubmitBtnDisabled =
+    image && title.trim().length !== 0 && location.trim().length !== 0
+      ? false
+      : true;
+
+  const onFormSubmit = () => {
+    const data = {
+      image,
+      title,
+      location,
+      coordinates,
+    };
+    console.log("Form submit DATA: ", data);
+
+    navigation.navigate("Posts");
+  };
+
+  const onReset = () => {
+    setImage(null);
+    onChangeLocation("");
+    onChangeTitle("");
+  };
 
   const removeIcon = (
     <Icon
@@ -33,21 +76,6 @@ export const CreatePostScreen = () => {
       style={styles.locationIcon}
     />
   );
-
-  const isSubmitBtnDisabled =
-    image && title.trim().length !== 0 && location.trim().length !== 0
-      ? false
-      : true;
-
-  const onFormSubmit = () => {
-    console.log("Title: ", title, "\n", "Location: ", location);
-  };
-
-  const onReset = () => {
-    setImage(null);
-    onChangeLocation("");
-    onChangeTitle("");
-  };
 
   return (
     <View style={styles.container}>

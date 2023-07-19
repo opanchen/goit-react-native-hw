@@ -63,7 +63,9 @@ export const PostProfile = ({ post }) => {
         </View>
 
         <View style={styles.location}>
-          {locationIcon}
+          <Pressable onPress={() => navigation.navigate("Map")}>
+            {locationIcon}
+          </Pressable>
           <Pressable>
             <Text style={styles.locationText}>{location}</Text>
           </Pressable>
