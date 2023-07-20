@@ -11,7 +11,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import backgroundImg from "..//images/bg-pic.jpg";
+import backgroundImg from "../../assets/images//bg-pic.jpg";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 

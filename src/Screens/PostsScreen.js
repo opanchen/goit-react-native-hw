@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, Image, FlatList } from "react-native";
-import UserDefaultAvatar from "../images/user-avatar.png";
-import { posts } from "../data/posts.js";
-import { Post } from "../components/Post";
+import UserDefaultAvatar from "../../assets/images/user-avatar.png";
+import { posts } from "../data";
+import { Post } from "../components";
 
 export const PostsScreen = () => {
   return (

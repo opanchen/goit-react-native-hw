@@ -2,8 +2,6 @@ import { useNavigation } from "@react-navigation/native";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 
-// import imgDefault from "../images/post1.png";
-
 export const Post = ({ post }) => {
   const { title, likes, comments, image, location } = post;
   const navigation = useNavigation();

@@ -10,7 +10,7 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 import * as Location from "expo-location";
 import { useNavigation } from "@react-navigation/native";
-import { CameraView } from "../components/CameraView";
+import { CameraView } from "../components";
 
 export const CreatePostScreen = () => {
   const [image, setImage] = useState(null);

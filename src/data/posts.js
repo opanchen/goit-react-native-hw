@@ -2,7 +2,7 @@ export const posts = [
   {
     id: "1",
     title: "Ліс",
-    image: require("../images/post1.png"),
+    image: require("../../assets/images/post1.png"),
     comments: ["", "", ""],
     likes: 153,
     location: "Ukraine",
@@ -10,7 +10,7 @@ export const posts = [
   {
     id: "2",
     title: "Захід на Чорному морі",
-    image: require("../images/post2.png"),
+    image: require("../../assets/images/post2.png"),
     comments: ["", "", ""],
     likes: 200,
     location: "Ukraine",
@@ -18,7 +18,7 @@ export const posts = [
   {
     id: "3",
     title: "Старий будиночок у Венеції",
-    image: require("../images/post3.png"),
+    image: require("../../assets/images/post3.png"),
     comments: ["", "", ""],
     likes: 200,
     location: "Italy",

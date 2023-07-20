@@ -7,13 +7,13 @@ import {
   Text,
   View,
 } from "react-native";
-import backgroundImg from "..//images/bg-pic.jpg";
-import userDefaultAvatar from "../images/user-avatar.png";
+import backgroundImg from "../../assets/images/bg-pic.jpg";
+import userDefaultAvatar from "../../assets/images/user-avatar.png";
 
 import Icon from "react-native-vector-icons/Ionicons";
-import { posts } from "../data/posts.js";
-import { PostProfile } from "../components/PostProfile";
-import { LogOutBtn } from "../components/LogOutBtn";
+import { posts } from "../data";
+import { PostProfile, LogOutBtn } from "../components";
+// import { LogOutBtn } from "../components/LogOutBtn";
 
 export const ProfileScreen = () => {
   const editAvatarIcon = (
