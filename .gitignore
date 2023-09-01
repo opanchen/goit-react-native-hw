@@ -17,3 +17,8 @@ web-build/
 .metro-health-check*
 
 .env
+
+# ! new files...
+android
+.vscode
+metro.config.js
