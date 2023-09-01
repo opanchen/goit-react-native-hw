@@ -1,9 +1,13 @@
 import Icon from "react-native-vector-icons/Ionicons";
-import { Pressable, StyleSheet } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
+import { logOut } from "../redux/auth/operations";
 
 export const LogOutBtn = ({ btnStyles }) => {
   const navigation = useNavigation();
+
+  const dispatch = useDispatch();
 
   const logoutIcon = (
     <Icon
@@ -14,10 +18,15 @@ export const LogOutBtn = ({ btnStyles }) => {
     />
   );
 
+  const onBtnPress = async () => {
+    dispatch(logOut());
+    navigation.navigate("Login");
+  };
+
   return (
-    <Pressable style={btnStyles} onPress={() => navigation.navigate("Login")}>
+    <TouchableOpacity style={btnStyles} onPress={onBtnPress}>
       {logoutIcon}
-    </Pressable>
+    </TouchableOpacity>
   );
 };
 

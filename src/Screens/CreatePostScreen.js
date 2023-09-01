@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
-  Pressable,
+  Alert,
+  TouchableOpacity,
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import * as Location from "expo-location";
 import { useNavigation } from "@react-navigation/native";
-import { CameraView } from "../components/CameraView";
+import { CameraView } from "../components";
+import { selectUser } from "../redux/auth/selectors";
+import { addPost } from "../redux/posts/operations";
 
 export const CreatePostScreen = () => {
   const [image, setImage] = useState(null);
@@ -19,37 +22,47 @@ export const CreatePostScreen = () => {
   const [coordinates, setCoordinates] = useState(null);
 
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const user = useSelector(selectUser);
 
   useEffect(() => {
     (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        console.log("Permission to access location was denied");
-      }
+      try {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          console.log("requestForegroundPermissionsAsync()");
+          console.log("Permission to access location was denied");
+          return Alert.alert(
+            "У доступі до місцезнаходження відмовлено. \n Для подальшого використання даних про поточне місцезнаходження, будь ласка, змініть відповідні налаштування Вашого девайсу та спробуйте ще раз."
+          );
+        }
 
-      let location = await Location.getCurrentPositionAsync({});
-      const coords = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      };
-      setCoordinates(coords);
+        let location = await Location.getCurrentPositionAsync({});
+        const coords = {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        };
+        setCoordinates(coords);
+        // console.log("!!!!!!!! ========> !!!!!!!!!!!!");
+        // console.log("location: ", location);
+      } catch (error) {
+        console.log(error);
+      }
     })();
-  }, []);
+  }, [image]);
 
   const isSubmitBtnDisabled =
     image && title.trim().length !== 0 && location.trim().length !== 0
       ? false
       : true;
 
-  const onFormSubmit = () => {
-    const data = {
-      image,
-      title,
-      location,
-      coordinates,
-    };
-    console.log("Form submit DATA: ", data);
+  const onFormSubmit = async () => {
+    // console.log("COORDINATES ON SUBMIT FOO: ", coordinates);
+    dispatch(
+      addPost({ image, title, location, coordinates, owner: user.email })
+    );
 
+    onReset();
     navigation.navigate("Posts");
   };
 
@@ -105,7 +118,7 @@ export const CreatePostScreen = () => {
           </View>
         </View>
 
-        <Pressable
+        <TouchableOpacity
           disabled={isSubmitBtnDisabled}
           style={
             isSubmitBtnDisabled
@@ -123,13 +136,13 @@ export const CreatePostScreen = () => {
           >
             Опубліковати
           </Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.tabBar}>
-        <Pressable style={styles.removeBtn} onPress={onReset}>
+        <TouchableOpacity style={styles.removeBtn} onPress={onReset}>
           {removeIcon}
-        </Pressable>
+        </TouchableOpacity>
       </View>
     </View>
   );

@@ -1,11 +1,8 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Icon from "react-native-vector-icons/Ionicons";
 import { View } from "react-native";
-import { PostsScreen } from "../Screens/PostsScreen";
-import { CreatePostScreen } from "../Screens/CreatePostScreen";
-import { ProfileScreen } from "../Screens/ProfileScreen";
-import { LogOutBtn } from "../components/LogOutBtn";
-import { BackBtn } from "../components/BackBtn";
+import { PostsScreen, CreatePostScreen, ProfileScreen } from "../Screens";
+import { LogOutBtn, BackBtn } from "../components";
+import Icon from "react-native-vector-icons/Ionicons";
 
 const Tab = createBottomTabNavigator();
 
