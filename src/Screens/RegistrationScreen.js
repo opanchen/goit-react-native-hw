@@ -1,5 +1,5 @@
 import {
-  Alert,
+  Image,
   ImageBackground,
   Keyboard,
   KeyboardAvoidingView,
@@ -13,35 +13,100 @@ import {
   View,
 } from "react-native";
 import backgroundImg from "../../assets/images/bg-pic.jpg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
+import * as DocumentPicker from "expo-document-picker";
+import { useDispatch, useSelector } from "react-redux";
+import { register } from "../redux/auth/operations";
+import { selectError, selectIsLoggedIn } from "../redux/auth/selectors";
+import { ErrorView } from "../components";
 
 export const RegistrationScreen = () => {
   const [login, onChangeLogin] = useState("");
   const [email, onChangeEmail] = useState("");
   const [password, onChangePassword] = useState("");
+  const [isShownPassword, setIsShownPassword] = useState(false);
+  const [avatar, setAvatar] = useState(null);
+  const [validationError, setValidationError] = useState(null);
+  const [actionCount, setActionCount] = useState(0);
+
+  const isBtnDisabled =
+    login.length === 0 || email.length === 0 || password.length === 0;
 
   const navigation = useNavigation();
 
-  const addIcon = (
-    <Icon
-      name="add-circle-outline"
-      size={25}
-      color={"#FF6C00"}
-      style={styles.addPictureBtn}
-    />
-  );
+  const dispatch = useDispatch();
 
-  const onRegister = () => {
-    Alert.alert(`Credentials: ${login} ${email} ${password}`);
+  const selectFile = async () => {
+    let result = await DocumentPicker.getDocumentAsync({ type: "image/*" });
+    // console.log("RES: ", result);
+    // console.log("Selected file: ", result.uri);
+    setAvatar(result?.uri);
+  };
+
+  const isLoggedIn = useSelector(selectIsLoggedIn);
+  const reduxError = useSelector(selectError);
+
+  useEffect(() => {
+    if (isLoggedIn && !reduxError) {
+      navigation.navigate("PostsTabs");
+    }
+  }, [isLoggedIn, reduxError]);
+
+  const addIcon = <Icon name="add-outline" size={23} color={"#FF6C00"} />;
+
+  const removeIcon = <Icon name="close-outline" size={23} color={"#BDBDBD"} />;
+
+  const handleVisiblePassword = () => {
+    setIsShownPassword(!isShownPassword);
+  };
+
+  const resetForm = () => {
+    onChangeLogin("");
+    onChangeEmail("");
+    onChangePassword("");
+    setAvatar(null);
+  };
+
+  const onRegister = async () => {
+    if (
+      login.trim() === "" ||
+      email.trim() === "" ||
+      password.trim().length < 6
+    ) {
+      setValidationError(
+        "Поля логін, пошта та пароль обовʼязкові! \nПароль має бути мінімум 6 символів."
+      );
+      setActionCount(actionCount + 1);
+      return;
+    }
+
+    dispatch(
+      register({
+        login,
+        email,
+        password,
+        avatar,
+      })
+    );
+
+    setActionCount(actionCount + 1);
+    resetForm();
+
+    // navigation.navigate("PostsTabs");
+  };
+
+  const navigateToLogin = () => {
+    resetForm();
+    navigation.navigate("Login");
   };
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
-      keyboardVerticalOffset={-249}
+      keyboardVerticalOffset={-492}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.container}>
@@ -50,11 +115,13 @@ export const RegistrationScreen = () => {
             resizeMode="cover"
             style={styles.backgroundImg}
           >
-            {/* <KeyboardAvoidingView */}
-            {/* behavior={Platform.OS === 'ios' ? 'padding' : 'height'} */}
+            {reduxError && actionCount > 0 && (
+              <ErrorView text={reduxError} boxStyles={styles.error} />
+            )}
+            {validationError && actionCount > 0 && (
+              <ErrorView text={validationError} boxStyles={styles.error} />
+            )}
 
-            {/* keyboardVerticalOffset={-75} */}
-            {/* > */}
             <View style={styles.form}>
               <Text style={styles.formTitle}>Реєстрація</Text>
               <View style={styles.formFields}>
@@ -63,14 +130,12 @@ export const RegistrationScreen = () => {
                   onChangeText={onChangeLogin}
                   value={login}
                   placeholder="Логін"
-                  // keyboardType="numeric"
                 />
                 <TextInput
                   style={styles.formInput}
                   onChangeText={onChangeEmail}
                   value={email}
                   placeholder="Адреса електронної пошти"
-                  // keyboardType="numeric"
                 />
 
                 <View style={styles.passwordField}>
@@ -78,40 +143,68 @@ export const RegistrationScreen = () => {
                     style={styles.formInput}
                     onChangeText={onChangePassword}
                     value={password}
-                    secureTextEntry
+                    secureTextEntry={!isShownPassword}
                     placeholder="Пароль"
-                    // keyboardType="numeric"
                   />
                   <Pressable
-                    // onPress={onPressShowPassword}
+                    onPress={handleVisiblePassword}
                     style={styles.showPasswordBtnPressable}
                   >
-                    <Text style={styles.showPasswordBtnText}>Показати</Text>
+                    <Text style={styles.showPasswordBtnText}>
+                      {isShownPassword ? "Приховати" : "Показати"}
+                    </Text>
                   </Pressable>
                 </View>
               </View>
 
               <TouchableOpacity
-                style={styles.signInBtnPressable}
+                style={
+                  isBtnDisabled
+                    ? {
+                        ...styles.signInBtnPressable,
+                        backgroundColor: "#F6F6F6",
+                        borderWidth: 1,
+                      }
+                    : styles.signInBtnPressable
+                }
                 onPress={onRegister}
+                disabled={isBtnDisabled}
               >
-                <Text style={styles.signInBtnText}>Зареєстуватися</Text>
+                <Text
+                  style={
+                    isBtnDisabled
+                      ? { ...styles.signInBtnText, color: "#BDBDBD" }
+                      : styles.signInBtnText
+                  }
+                >
+                  Зареєстуватися
+                </Text>
               </TouchableOpacity>
-              <Pressable
-                style={styles.logInLink}
-                onPress={() => navigation.navigate("Login")}
-              >
+              <Pressable style={styles.logInLink} onPress={navigateToLogin}>
                 <Text style={styles.logInLinkText}>Вже є акаунт? Увійти</Text>
               </Pressable>
 
-              <View style={styles.picturePlaceholder}>
-                <View style={styles.addPictureBtn}>
-                  <Pressable></Pressable>
+              {!avatar ? (
+                <View style={styles.picturePlaceholder}>
+                  <Pressable onPress={selectFile} style={styles.addPictureBtn}>
+                    {addIcon}
+                  </Pressable>
                 </View>
-                {addIcon}
-              </View>
+              ) : (
+                <View style={styles.avatarContainer}>
+                  <Image
+                    style={{ flex: 1, borderRadius: 16 }}
+                    source={{ uri: avatar }}
+                  />
+                  <Pressable
+                    onPress={() => setAvatar(null)}
+                    style={styles.removePictureBtn}
+                  >
+                    {removeIcon}
+                  </Pressable>
+                </View>
+              )}
             </View>
-            {/* </KeyboardAvoidingView> */}
           </ImageBackground>
         </View>
       </TouchableWithoutFeedback>
@@ -126,6 +219,13 @@ const styles = StyleSheet.create({
   backgroundImg: {
     flex: 1,
     position: "relative",
+  },
+  error: {
+    position: "absolute",
+    top: 40,
+    left: 16,
+    rigth: 16,
+    zIndex: 99,
   },
   form: {
     position: "absolute",
@@ -222,27 +322,41 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     backgroundColor: "#F6F6F6",
   },
+  avatarContainer: {
+    position: "absolute",
+    top: -60,
+    width: 120,
+    height: 120,
+    borderRadius: 16,
+  },
   addPictureBtn: {
     position: "absolute",
     bottom: 14,
-    right: -12.5,
-    // transform: [{translateX: -Dimensions.get('window').width * 0.24}],
-    // flex: 1,
-    // justifyContent: 'center',
-    // alignItems: 'center',
-    width: 25,
-    height: 25,
-    // borderRadius: '50%',
-    // borderWidth: 1,
-    // backgroundColor: '#FFFFFF',
+    right: -16,
+    flex: 0,
+    justifyContent: "center",
+    alignItems: "center",
+
+    width: 32,
+    height: 32,
+
+    borderWidth: 1,
+    borderColor: "#FF6C00",
+    borderRadius: 50,
   },
-  addPictureIcon: {
-    // position: 'absolute',
-    // top: 0,
-    // bottom: 0,
-    // left: 0,
-    // right: 0,
-    // width: 50,
-    // transform: [{ translateX: -Dimensions.get('window').width * 0.24 }],
+  removePictureBtn: {
+    position: "absolute",
+    bottom: 14,
+    right: -16,
+    flex: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    width: 32,
+    height: 32,
+    backgroundColor: "#FFF",
+    borderRadius: 50,
+    borderColor: "#BDBDBD",
+    borderWidth: 1,
   },
+  addPictureIcon: {},
 });

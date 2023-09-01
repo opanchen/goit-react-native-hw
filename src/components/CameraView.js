@@ -9,8 +9,8 @@ import {
 } from "react-native";
 import { Camera } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
-import Icon from "react-native-vector-icons/Ionicons";
 import * as DocumentPicker from "expo-document-picker";
+import Icon from "react-native-vector-icons/Ionicons";
 
 export const CameraView = ({ uploadImage }) => {
   const [hasPermission, setHasPermission] = useState(null);
@@ -44,7 +44,7 @@ export const CameraView = ({ uploadImage }) => {
   const takePhoto = async () => {
     if (cameraRef) {
       const { uri } = await cameraRef.takePictureAsync();
-      console.log("PHOTO URI: \n", uri);
+      // console.log("PHOTO URI: \n", uri);
       setImage(uri);
       uploadImage(uri);
       await MediaLibrary.createAssetAsync(uri);
@@ -61,8 +61,8 @@ export const CameraView = ({ uploadImage }) => {
 
   const selectFile = async () => {
     let result = await DocumentPicker.getDocumentAsync({ type: "image/*" });
-    console.log(result);
-    console.log(result.uri);
+    // console.log(result);
+    // console.log(result.uri);
     setImage(result.uri);
     uploadImage(result.uri);
   };
@@ -184,6 +184,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontStyle: "normal",
     fontWeight: 400,
-    // lineHeight: "normal",
   },
 });

@@ -1,6 +1,11 @@
-import { useFonts } from "expo-font";
+//
+
 import "react-native-gesture-handler";
-import { MainNavigationContainer } from "./src/navigation";
+import { useFonts } from "expo-font";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+import { RootNavigation } from "./src/navigation";
+import { persistor, store } from "./src/redux/store";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -9,5 +14,11 @@ export default function App() {
 
   if (!fontsLoaded) return null;
 
-  return <MainNavigationContainer />;
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <RootNavigation />
+      </PersistGate>
+    </Provider>
+  );
 }

@@ -1,29 +1,75 @@
 import {
-  FlatList,
+  Alert,
   Image,
   ImageBackground,
-  Pressable,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import backgroundImg from "../../assets/images/bg-pic.jpg";
-import userDefaultAvatar from "../../assets/images/user-avatar.png";
-
+import * as DocumentPicker from "expo-document-picker";
 import Icon from "react-native-vector-icons/Ionicons";
-import { posts } from "../data";
-import { PostProfile, LogOutBtn } from "../components";
-// import { LogOutBtn } from "../components/LogOutBtn";
+import { LogOutBtn, PostList } from "../components";
+import { useDispatch, useSelector } from "react-redux";
+import { selectUser } from "../redux/auth/selectors";
+import { useEffect } from "react";
+import { fetchPosts } from "../redux/posts/operations";
+import { updateAvatar } from "../redux/auth/operations";
 
 export const ProfileScreen = () => {
+  const user = useSelector(selectUser);
+  const userEmail = user.email;
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchPosts({ owner: userEmail }));
+  }, [dispatch, userEmail]);
+
   const editAvatarIcon = (
     <Icon
-      name="close-outline"
+      name={user.avatarURL ? "close-outline" : "add-outline"}
       size={23}
       color={"#BDBDBD"}
       style={styles.addPictureBtn}
     />
   );
+
+  const selectFile = async () => {
+    let result = await DocumentPicker.getDocumentAsync({ type: "image/*" });
+    // console.log("Selected file: ", result.uri);
+    // setAvatar(result?.uri);
+    return result.uri;
+  };
+
+  const handleUpdateAvatar = async () => {
+    let newAvatar;
+    if (!user.avatarURL) {
+      newAvatar = await selectFile();
+    }
+
+    return Alert.alert(
+      "Оновити аватар",
+      "Підтвердження операції призведе до безповоротньої зміни аватару. ",
+      [
+        {
+          text: "Скасувати",
+          onPress: () => console.log("Cancel pressed."),
+          style: "cancel",
+        },
+        {
+          text: "Підтвердити",
+          onPress: () => {
+            console.log("OK pressed.");
+            const avatar = newAvatar ? newAvatar : null;
+            // console.log("avatar prop BEFORE DISPATCH: ", avatar);
+            dispatch(updateAvatar({ avatar }));
+          },
+        },
+      ]
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -36,19 +82,22 @@ export const ProfileScreen = () => {
           <LogOutBtn btnStyles={styles.logoutBtn} />
 
           <View style={styles.thumb}>
-            <Image style={styles.userAvatar} source={userDefaultAvatar} />
-            <Pressable style={styles.editAvatarBtn}>{editAvatarIcon}</Pressable>
-          </View>
-
-          <Text style={styles.userName}>Natali Romanova</Text>
-
-          <View style={styles.postList}>
-            <FlatList
-              data={posts}
-              renderItem={({ item }) => <PostProfile post={item} />}
-              keyExtractor={(item) => item.id}
+            <Image
+              style={styles.userAvatar}
+              source={{
+                uri: user.avatarURL,
+              }}
             />
+            <TouchableOpacity
+              onPress={handleUpdateAvatar}
+              style={styles.editAvatarBtn}
+            >
+              {editAvatarIcon}
+            </TouchableOpacity>
           </View>
+
+          <Text style={styles.userName}>{user.login}</Text>
+          <PostList styles={styles.postList} />
         </View>
       </ImageBackground>
     </View>
@@ -94,7 +143,7 @@ const styles = StyleSheet.create({
   editAvatarBtn: {
     position: "absolute",
     bottom: 14,
-    right: -12.5,
+    right: -16,
 
     flex: 0,
     justifyContent: "center",
@@ -103,10 +152,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
     borderRadius: 50,
     borderColor: "#BDBDBD",
+    width: 32,
+    height: 32,
   },
   editAvatarIcon: {
-    width: 25,
-    height: 25,
+    width: 23,
+    height: 23,
   },
   logoutBtn: {
     position: "absolute",
