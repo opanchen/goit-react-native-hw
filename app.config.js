@@ -25,14 +25,9 @@ export default {
       backgroundColor: "#ffffff",
     },
     assetBundlePatterns: ["**/*"],
-    // ios: {
-    //   supportsTablet: true,
-    // },
-    // jsEngine: "hermes",
     android: {
-      // package: "com.anonymous.goitreactnativehw",
-      // jsEngine: "jsc",
-      // supportsTablet: true,
+      package: "com.anonymous.goitreactnativehw",
+      versionCode: 1,
       adaptiveIcon: {
         foregroundImage: "./assets/adaptive-icon.png",
         backgroundColor: "#ffffff",
@@ -45,10 +40,6 @@ export default {
         "ACCESS_MEDIA_LOCATION",
       ],
     },
-    // ios: {
-    //   jsEngine: "jsc",
-    //   supportsTablet: true,
-    // },
     web: {
       favicon: "./assets/favicon.png",
     },
@@ -61,7 +52,9 @@ export default {
       firebaseMessagingSenderId: FIREBASE_MESSAGING_SENDER_ID,
       firebaseAppId: FIREBASE_APP_ID,
       firebaseMeasurementId: FIREBASE_MEASUREMENT_ID,
+      eas: {
+        projectId: "945bddc1-47f4-466d-b725-e06ee45c17a9",
+      },
     },
-    // jsEngine: "jsc",
   },
 };
